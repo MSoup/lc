@@ -6,20 +6,18 @@
 class Solution:
     def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
         curr = head
-        tmp = dummyL = ListNode()
-
-        dummyL.next = curr
-        # set curr into place such that the gap is n
-        count = 0
-        while count < n:
+        tmp = dummy = ListNode()
+        tmp.next = curr
+        
+        for _ in range(n): 
+            if not curr:
+                return head
             curr = curr.next
-            count += 1
 
-        # gap is now set
         while curr:
             curr = curr.next
-            dummyL = dummyL.next
+            tmp = tmp.next
 
-        dummyL.next = dummyL.next.next
+        tmp.next = tmp.next.next
 
-        return tmp.next
+        return dummy.next
