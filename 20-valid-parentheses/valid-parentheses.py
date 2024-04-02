@@ -5,8 +5,6 @@ class Solution:
         for bracket in s:
             if bracket in opening_pairs:
                 stack.append(bracket) 
-            elif not stack:
+            elif not stack or opening_pairs[stack.pop()] != bracket:
                     return False
-            elif opening_pairs[stack.pop()] != bracket:
-                return False
         return stack == [] 
