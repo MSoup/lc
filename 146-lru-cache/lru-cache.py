@@ -5,77 +5,80 @@ class Node:
         self.next = next
         self.prev = prev
 
-class LL:
+
+class LinkedList:
     def __init__(self):
         self.head = None
         self.tail = None
-        self.size = 0
+        self.capacity = 0
 
-    def append_head(self, new_head: Node):
+    def append(self, node: Node):
+        # appending as the only node
         if not self.head:
-            self.head = self.tail = new_head
-        else:
-            new_head.prev = None
-            new_head.next = self.head
-            self.head.prev = new_head
-            self.head = new_head
+            self.head = self.tail = node
 
-        self.size += 1
+        # head and tail are the same
+        elif self.head == self.tail:
+            node.next = self.head
+            self.head.prev = node
+            self.head = node
+            self.head.next = self.tail
+
+        else:
+            node.next = self.head
+            self.head.prev = node
+            self.head = node
+
+        self.capacity += 1
 
     def remove(self, node: Node):
-        # only node
-        if node.prev == None and node.next == None:
+        # given a node that exists in this list, remove it
+        # the only node
+        if self.head == node and self.tail == node:
             self.head = self.tail = None
-        # if it's the head
-        elif node == self.head:
+
+        elif self.head == node:
             self.head = self.head.next
             self.head.prev = None
-        # if tail
-        elif node == self.tail:
+
+        elif self.tail == node:
             self.tail = self.tail.prev
             self.tail.next = None
-        # if in middle
+
         else:
+            # middle
             node.prev.next = node.next
             node.next.prev = node.prev
-        
-        self.size -= 1
+
+        self.capacity -= 1
+
 
 class LRUCache:
-    def __init__(self, capacity: int):
+    def __init__(self, capacity):
         self.capacity = capacity
         self.cache = {}
-        self.list = LL()
+        self.list = LinkedList()
 
-    def get(self, key: int) -> int:
+    def get(self, key):
         if key in self.cache:
-            # move node to head
-            node = self.cache[key]
-            self.list.remove(node)
-            self.list.append_head(node)
-
-            return node.val
+            node_to_refresh = self.cache[key]
+            self.list.remove(node_to_refresh)
+            self.list.append(node_to_refresh)
+            return self.cache[key].val
         return -1
 
-    def put(self, key: int, value: int) -> None:
-        # if key exists we remove prev node
-        if key in self.cache:
-            self.list.remove(self.cache[key])
-        
-
-        node = Node(key=key, val=value)
-        self.list.append_head(node)
-        self.cache[key] = node
-
-        # remove last element
-        if self.list.size > self.capacity:
-            key_to_remove = self.list.tail.key
-            node_to_remove = self.list.tail
+    def put(self, key, val):
+        node = Node(key, val)
+        if key not in self.cache:
+            self.cache[key] = node
+            self.list.append(node)
+        else:
+            # key is in cache
+            node_to_remove = self.cache[key]
             self.list.remove(node_to_remove)
-            del self.cache[key_to_remove]
+            self.list.append(node)
+            self.cache[key] = node
 
-
-# Your LRUCache object will be instantiated and called as such:
-# obj = LRUCache(capacity)
-# param_1 = obj.get(key)
-# obj.put(key,value)
+        if self.list.capacity > self.capacity:
+            del self.cache[self.list.tail.key]
+            self.list.remove(self.list.tail)
