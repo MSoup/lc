@@ -16,20 +16,16 @@ class Solution:
             # Accumulate number
             if s[i].isdigit():
                 current = current * 10 + int(s[i])
-            elif s[i] == "+":
+            elif s[i] in "+-":
                 # apply computation of prev
                 result += sign * current
-                sign = 1
+                sign = -1 if s[i] == "-" else 1
                 current = 0
-            elif s[i] == "-":
-                result += sign * current
-                sign = -1
-                current = 0
-
             elif s[i] == "(":
                 # append current result then start again
                 stack.append(CallStack(result, sign))
                 
+                # reset sign and result
                 sign = 1
                 result = 0
             elif s[i] == ")":
