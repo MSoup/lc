@@ -1,35 +1,34 @@
 class Solution:
     def calculate(self, s: str) -> int:
-        total = current_num = 0
-        sign = 1
         stack = []
+        total = 0
+        current_number = 0
+        sign = 1
 
         for char in s:
             if char.isdigit():
-                # need to start building the number
-                current_num = current_num * 10 + int(char)
+                current_number = current_number * 10 + int(char)
+                print("curr num is", current_number)
             elif char == "+":
-                # current_num won't grow anymore
-                total += sign * current_num
-                current_num = 0
+                # we completed a number
+                total += current_number * sign
                 sign = 1
+                current_number = 0
             elif char == "-":
-                total += sign * current_num
-                current_num = 0
+                total += current_number * sign
                 sign = -1
+                current_number = 0
             elif char == "(":
-                # save current progress
-                stack.append(total)
-                stack.append(sign)
-
-                sign = 1
+                # start a new 'call stack'
+                stack.append([total, sign])
                 total = 0
-
+                sign = 1
             elif char == ")":
-                total += sign * current_num
-                total *= stack.pop()
-                total += stack.pop()
+                prev_total = stack.pop()
+                total += current_number * sign
+                total *= prev_total[1]
+                total += prev_total[0]
 
+                current_number = 0
 
-                current_num = 0
-        return total + current_num * sign
+        return total + current_number * sign
