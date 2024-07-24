@@ -1,22 +1,29 @@
 class Solution:
     def restoreIpAddresses(self, s: str) -> List[str]:
-        # impossible to build a valid IP if s isn't the right length
         if len(s) < 4 or len(s) > 12:
             return []
 
-        # build chunks
-        solution = []
 
-        def bfs(i: int, dots: int, result: str):
-            if dots == 4 and i == len(s):
-                solution.append(result[:-1])
+        solution = []
+        dots = 0
+        
+        # no valid IP until we reach end of string 
+        # and 3 dots have been placed
+
+        # also we need all valid IPs
+        def explore(i: int, dots: int, running_result: str):
+            if i == len(s) and dots == 4:
+                solution.append(running_result[:-1])
+                return
             elif dots > 4:
                 return
+            
             for j in range(i, min(i+3, len(s))):
                 substring = s[i:j+1]
-                if int(substring) < 256 and (len(substring) > 1 and substring[0] != "0" or i == j):
-                    bfs(j+1, dots+1, result + substring + ".")
-
+                # check substring
+                if int(substring) < 256 and (i == j or s[i] != "0"):
+                    # valid path
+                    explore(j+1, dots+1, running_result + substring + ".")
         
-        bfs(0, 0, "")
+        explore(0,0,"")
         return solution
