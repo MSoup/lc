@@ -1,36 +1,35 @@
 class Solution:
     def calculate(self, s: str) -> int:
         stack = []
-        result = 0
-        current_number = 0
+        # 1 - (2 + 3)
+        # ignore whitespace
+        
+        total = 0
+        operand = 0
+        # sign is 1 if operator is + else -1
         sign = 1
 
         for char in s:
             if char.isdigit():
-                # build
-                current_number = current_number * 10 + int(char)
-            elif char == "+":
-                result += current_number * sign
-                sign = 1
-                current_number = 0
-            elif char == "-":
-                result += current_number * sign
-                sign = -1
-                current_number = 0
+                operand = operand * 10 + int(char)
+            elif char in "+-":
+                total += operand * sign
+                sign = 1 if char == "+" else -1
+                operand = 0
             elif char == "(":
-                # init new call stack
-                stack.append(result)
-                stack.append(sign)
-
-                # reset result
-                result = 0
+                total += operand * sign
+                # new stack
+                stack.append([total, sign])
+                
+                total = 0
                 sign = 1
             elif char == ")":
-                result += current_number * sign
-                result *= stack.pop()
-                result += stack.pop()
+                total += operand * sign
+                top = stack.pop()
+                total *= top[1]
+                total += top[0]
 
-                # reset
+                operand = 0
                 sign = 1
-                current_number = 0
-        return result + current_number * sign
+                
+        return total + operand * sign
