@@ -9,28 +9,33 @@ class Solution:
         # if no node, return null
         if not root:
             return root
+
         if key < root.val:
             root.left = self.deleteNode(root.left, key)
         elif key > root.val:
             root.right = self.deleteNode(root.right, key)
+
         else:
-            # found the node we want to remove
-            # if this node is a child, return the other sibling
+            # found key
+            # case 1: 1 child
             if not root.left:
                 return root.right
             if not root.right:
                 return root.left
-            
-            # get min of right subtree
+
+            # case 2: 2 children
+            # find min in right subtree
             tmp = self.find_min(root.right)
-            # assign root that we want to delete to min
+            # set root.val to this value
             root.val = tmp.val
-            # remove duplicate recursively
+            # remove duplicates
             root.right = self.deleteNode(root.right, root.val)
-        
+
         return root
 
     def find_min(self, node):
         if not node.left:
             return node
+
         return self.find_min(node.left)
+
