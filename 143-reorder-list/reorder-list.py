@@ -8,31 +8,40 @@ class Solution:
         """
         Do not return anything, modify head in-place instead.
         """
-        if not head:
-            return None
-        
-        slow = head
-        fast = head
-
+    
+        slow, fast = head, head
         while fast and fast.next:
             slow = slow.next
             fast = fast.next.next
-        # slow is now at the middle
 
-        # reverse second half
-        second = slow.next
-        prev = slow.next = None
-        while second:
-            tmp = second.next
-            second.next = prev
-            prev = second
-            second = tmp
+        # slow is now at middle
+        head2 = slow.next
+        slow.next = None
+        head2 = self.reverse(head2)
 
-        # merge
-        first, second = head, prev
-        while second:
-            tmp1, tmp2 = first.next, second.next
-            first.next = second
-            second.next = tmp1
-            first, second = tmp1, tmp2
+        curr = head
+        while head2:
+            next1 = curr.next
+            next2 = head2.next
+            curr.next = head2
+            head2.next = next1
+            curr = next1
+            head2 = next2
+        return head
 
+    def reverse(self, node):
+        prev = None
+        current = node
+        while current:
+            next_temp = current.next  # Save next node
+            current.next = prev       # Reverse the link
+            prev = current           # Move prev forward
+            current = next_temp      # Move current forward
+        return prev
+
+    def print_LL(self, node):
+        while node:
+            print(node.val, end=",")
+            node = node.next
+        print("Finished")
+        
