@@ -4,42 +4,46 @@ class TrieNode:
         self.children = {}
         self.isEnd = False
 
-
 class Solution:
+    def __init__(self):
+        self.root = Trie()
     def suggestedProducts(self, products, searchWord):
+        # Create trie
+        for word in products:
+            self.root.add(word)
+
+        prefix = ""
         result = []
-        trie = Trie()
-        for product in products:
-            trie.add(product)
-
-        current = trie.trie # start at root
-        built_word = ""
-        for char in searchWord:
-            built_word += char
-            if char not in current.children:
-                remaining = len(searchWord) - len(built_word) + 1
-                for _ in range(remaining):
-                    result.append([])
-                break
-            
-            current = current.children[char]
-            suggestions = []
-            
-
-            def dfs(node, word):
-                if len(suggestions) == 3:
-                    return
-                if node.isEnd:
-                    suggestions.append(word)
-                for c in sorted(node.children.keys()):
-                    dfs(node.children[c], word + c)
-
-            dfs(current, built_word)
-            result.append(suggestions) 
+        for c in searchWord:
+            prefix += c
+            matches = self.getMatches(prefix)
+            result.append(matches)
         return result
 
+    def getMatches(self, prefix):
+        curr = self.root.trie
+        for c in prefix:
+            # Append [], there are zero possible matches
+            if c not in curr.children:
+                return []
+            # Change node to explore deeper into prefix
+            curr = curr.children[c]
+
+        matches = []
+        self.dfs(curr, matches, prefix)
+        return matches
+
+    def dfs(self, curr, matches, prefix):
+        # Explore all baths and build matches
+        if len(matches) == 3:
+            return
+        if curr.isEnd:
+            matches.append(prefix)
         
-        
+        # sorted to ensure its lexicographically minimum
+        for key in sorted(curr.children.keys()):
+            self.dfs(curr.children[key], matches, prefix + key)
+
 
 class Trie:
     def __init__(self):
